@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\StoreRegisterRequest;
 use App\Models\User;
-use App\Http\Requests\StoreRegisterRequest;
 use Illuminate\Http\Request;
 
 class RegisterController extends Controller
@@ -14,7 +14,7 @@ class RegisterController extends Controller
      */
     public function index()
     {
-        return view('auth.register');
+        //
     }
 
     /**
@@ -22,7 +22,7 @@ class RegisterController extends Controller
      */
     public function create()
     {
-        //
+        return view('auth.register');
     }
 
     /**
@@ -30,10 +30,11 @@ class RegisterController extends Controller
      */
     public function store(StoreRegisterRequest $request)
     {
-        User::create($request->validated());
+        $user = User::create($request->validated());
 
-        // return redirect()->route('login.index')->with('success', 'Post creado');
-        return 'Usuario creado con exito!';
+        auth()->login($user);
+
+        return redirect()->route('home.index')->with('success', 'Usuario creado');
     }
 
     /**
