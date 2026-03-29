@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Http\Requests\LoginRequest;
+use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -15,7 +15,7 @@ class LoginController extends Controller
      */
     public function index()
     {
-        return view('auth.login');
+        //
     }
 
     /**
@@ -23,7 +23,7 @@ class LoginController extends Controller
      */
     public function create()
     {
-        //
+        return view('auth.login');
     }
 
     /**
@@ -36,7 +36,7 @@ class LoginController extends Controller
         if(Auth::attempt($credentials)){
             $request->session()->regenerate();
 
-            return 'Iniciaste sesion con exito';
+            return redirect()->route('home.index')->with('success', 'Usuario Logeado');
         };
 
         return back()->withErrors([
