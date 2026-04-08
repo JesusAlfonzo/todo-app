@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tasks\StoreTaskRequest;
 use Illuminate\Http\Request;
 use App\Models\Task;
-use App\Models\User;
 
 class TaskController extends Controller
 {
@@ -23,7 +22,7 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return view('tasks.create');
+        return view('tasks.create'); // -> Create Form
     }
 
     /**
@@ -31,11 +30,11 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        $validated = $request->validated();
+        $validated = $request->validated(); // -> Validate the request (form) and store in a variable
 
-        $request->user()->tasks()->create($validated);
+        $request->user()->tasks()->create($validated); // -> Create a task with a validated data form
 
-        return redirect()->route('home.index')->with('success', 'Tarea Creada');
+        return redirect()->route('home.index')->with('success', 'Tarea Creada'); // -> Return to home with success message
     }
 
     /**
@@ -43,9 +42,9 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        $task = Task::findOrFail($id);
+        $task = Task::findOrFail($id); // -> Find the task by his id and store in a variable
 
-        return view('tasks.show', compact('task'));
+        return view('tasks.show', compact('task')); // -> return to show view with the data task
     }
 
     /**
@@ -53,9 +52,9 @@ class TaskController extends Controller
      */
     public function edit(string $id)
     {
-        $task = Task::findOrFail($id);        
+        $task = Task::findOrFail($id); // -> Find the task by his id and store in a variable
         
-        return view('tasks.edit', compact('task'));
+        return view('tasks.edit', compact('task')); // -> return to edit view (form) with the data task
     }
 
     /**
@@ -63,13 +62,31 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $task = Task::findOrFail($id);
+        // 1. VALIDACIÓN: Laravel revisa las reglas automáticamente.
+        // Si falla, hace el "return back()->withErrors()" por ti y detiene la función aquí.
+        $request->validate([
+            'title' => 'required|max:255',
+            'content' => 'required|max:255',
+        ], [
+            // Aquí personalizamos el mensaje que quieres que salga en el frontend
+            'title.max' => 'El título excedió la cantidad de caracteres permitidos (255).',
+            'content.max' => 'El contenido excedió la cantidad de caracteres permitidos (255).',
+            'title.required' => 'El título es obligatorio.',
+            'content.required' => 'El contenido es obligatorio.'
+        ]);
 
-        $task->title = $request->input('title');
-        $task->content = $request->input('content');
+        // 2. BUSCAR: Encuentra la tarea en la base de datos
+        $task = Task::findOrFail($id); 
 
-        $task->save();
-        return redirect()->route('home.index')->with('success', 'Tarea Actualizada con exito');
+        // 3. ASIGNAR: Toma lo que viene del formulario y lo asigna al objeto
+        $task->title = $request->input('title'); 
+        $task->content = $request->input('content'); 
+
+        // 4. GUARDAR: Guarda los cambios en la base de datos
+        $task->save(); 
+
+        // 5. REDIRIGIR: Vuelve al home con mensaje de éxito
+        return redirect()->route('home.index')->with('success', 'Tarea Actualizada con éxito!'); 
     }
 
     /**
@@ -77,10 +94,10 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        $task = Task::findOrFail($id);
+        $task = Task::findOrFail($id); // -> Find the task by his id and store in a variable
 
-        $task->delete();
+        $task->delete(); // -> Delete the task (too easy)
 
-        return redirect()->route('home.index');
+        return redirect()->route('home.index')->with('success', 'Tarea eliminada con exito!'); // -> Return to home with a success message
     }
 }

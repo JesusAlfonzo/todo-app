@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +22,11 @@ class LoginController extends Controller
      */
     public function create()
     {
-        return view('auth.login');
+        if (auth()->check()){
+            return redirect()->route('home.index');
+        }
+
+        return view('auth.login'); // -> Return login form view
     }
 
     /**
@@ -74,11 +77,11 @@ class LoginController extends Controller
      */
     public function destroy(Request $request)
     {
-        Auth::logout();
+        Auth::logout(); // -> Logout the user session
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->session()->invalidate(); // -> invalidate the user session
+        $request->session()->regenerateToken(); // -> Regenerate the token of user session
 
-        return redirect('/');
+        return redirect('/'); // -> Return to Landing page
     }
 }

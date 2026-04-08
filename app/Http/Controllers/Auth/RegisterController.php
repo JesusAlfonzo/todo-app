@@ -22,7 +22,7 @@ class RegisterController extends Controller
      */
     public function create()
     {
-        return view('auth.register');
+        return view('auth.register'); // -> Return register form view
     }
 
     /**
@@ -30,11 +30,13 @@ class RegisterController extends Controller
      */
     public function store(StoreRegisterRequest $request)
     {
-        $user = User::create($request->validated());
+        $user = User::create($request->validated()); // -> Validate the request form, create a user and store in a variable
 
-        auth()->login($user);
+        auth()->login($user); // -> Auth the user and login to app using the $user variable (the user can enjoy the auth routes)
 
-        return redirect()->route('home.index')->with('success', 'Usuario creado');
+        return redirect()->route('home.index')->with('success', 'Usuario creado'); // -> After the login, return to home with a success message
+
+        // Note: Make a if conditional in case the user can't login
     }
 
     /**
